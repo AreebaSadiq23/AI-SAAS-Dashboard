@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - BACKEND_CORS_ORIGINS=http://localhost:5173,http://localhost:8080
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  # Production drop-ins — the app runs on its in-memory store by default.
+  # Uncomment and wire DATABASE_URL / REDIS_URL to use them.
+  #
+  # postgres:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: ai_workforce
+  #   ports:
+  #     - "5432:5432"
+  #
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
